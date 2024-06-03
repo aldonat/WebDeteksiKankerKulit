@@ -1,0 +1,41 @@
+#informasi img {
+  height: 150px;
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+.row .header h1 {
+  color: white;
+  font-size: 20px;
+  margin-top: 31px;
+  margin-left: 42px;
+}
+
+.row .body {
+  margin-top: 180px;
+  margin-left: 92px;
+  color: white;
+}
+
+.row .body h1 {
+  font-size: 50px;
+  font-weight: 600;
+}
+.row .body h2 {
+  font-size: 35px;
+  font-weight: 500;
+  line-height: 52px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+.row .body div p {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.row #sideleft {
+  background: url("../static/images/login.svg");
+  background-repeat: no-repeat;
+}

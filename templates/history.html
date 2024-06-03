@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Riwayat Prediksi</h2>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Image</th>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Label</th>
+            <th scope="col">Probability</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if history_data %} {% for idx in range(history_data|length) %}
+          <tr>
+            <th scope="row">{{ idx + 1 }}</th>
+            <td>
+              <img
+                src="{{ history_data[idx][0] }}"
+                alt="image"
+                style="width: 100px"
+              />
+            </td>
+            <td>{{ history_data[idx][1] }}</td>
+            <td>{{ history_data[idx][2] }}</td>
+            <td>{{ '%.4f' | format(history_data[idx][3]) }}</td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="5">No history data found.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

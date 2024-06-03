@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skin Guard</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light navbar-light fixed-top py-3">
+      <div class="container">
+        <a href="#" class="navbar-brand"><h1>Skin Guard</h1></a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navmenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navmenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="#Prediction" class="nav-link">Deteksi</a>
+            </li>
+            <li class="nav-item">
+              <a href="#informasi" class="nav-link">Informasi</a>
+            </li>
+            <li class="nav-item">
+              <a href="#promo" class="nav-link">Promo</a>
+            </li>
+            <li class="nav-item">
+              <a href="#contact" class="nav-link">Contact Us</a>
+            </li>
+            {% if session.username %}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+                href="#"
+                role="button"
+                aria-expanded="false"
+                >{{ session.username }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('history') }}"
+                    >History</a
+                  >
+                </li>
+                <li><a class="dropdown-item" href="#">Pengaturan</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="{{url_for('logout')}}"
+                    >Logout</a
+                  >
+                </li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- header -->
+    <section class="text-center text-sm-start bg-light pt-5 pb-5 pb-lg-0 mt-7">
+      <div class="container">
+        <div class="d-flex align-items-center">
+          <div>
+            <h1>Selamat Datang di</h1>
+            <h1>
+              <span class="text-primary">Web</span> Deteksi
+              <span class="text-primary">Kanker</span> Kulit
+            </h1>
+            <p class="lead">
+              Sistem Berbasis AI untuk mendeteksi Jenis Kanker Kulit. Unggah
+              gambar ke sistem, kemudian sistem akan mengklasifikasi gambar
+              tersebut dan memberikan rekomendasi penanganan yang tepat.
+            </p>
+
+            <a href="#Prediction" class="btn btn-primary">Coba Sekarang !</a>
+          </div>
+          <img
+            class="img-fluid w-50 d-none d-sm-block"
+            src="/static/images/web detection.svg"
+            alt="header"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Prediction -->
+    <section class="bg-primary text-light p-5 my-4" id="Prediction">
+      <div class="container">
+        <h3>Deteksi Kanker Kulit: Unggah Gambar di Sini</h3>
+        {% if session.loggedin %}
+        <div class="row">
+          <div class="col-md">
+            <form
+              action="{{ url_for('classify_image') }}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="mb-3">
+                <input
+                  type="file"
+                  class="form-control"
+                  id="imageUpload"
+                  name="file"
+                  accept="image/*"
+                />
+              </div>
+              <button type="submit" class="btn btn-dark">Prediksi</button>
+            </form>
+            <!-- Output area -->
+            {% if message %}
+            <div class="alert alert-primary mt-3" role="alert">
+              {{ message }}
+            </div>
+            <div class="mt-3">
+              <h4>Prediction Probabilities:</h4>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    {% for label in class_labels %}
+                    <th>{{ label }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {% for probability in predictions %}
+                    <td>{{ '%.4f' | format(probability) }}</td>
+                    {% endfor %}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md">
+            <img
+              src="{{ image_file }}"
+              class="img-fluid mt-3"
+              alt="Uploaded Image"
+            />
+          </div>
+        </div>
+        {% else %}
+        <p>
+          Silakan
+          <a href="{{ url_for('login') }}" class="text-warning">Login</a> untuk
+          menggunakan fitur prediksi.
+        </p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Informasi -->
+    <section class="p-5" id="informasi">
+      <div class="container">
+        <h2>Informasi Jenis Kanker Kulit</h2>
+
+        <!-- Row 1 -->
+        <div class="row text-center g-4 my-4">
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/bkl.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="BKL"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Benign Keratosis (BKL)</h5>
+                <p class="card-text">
+                  Jenis lesi kulit yang cenderung menyerupai keratosis aktinik
+                  atau seborrheic keratosis. Lesi jenis ini umumnya dianggap
+                  sebagai lesi prakanker atau lesi yang tidak ganas. Meskipun
+                  demikian, diagnosis dan pemantauan oleh profesional medis
+                  tetap penting karena BKL bisa menyerupai melanoma atau jenis
+                  kanker kulit lainnya.
+                </p>
+                <a
+                  href="https://www.alodokter.com/kanker-kulit"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/mel.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="Melanoma"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Melanoma (MEL)</h5>
+                <p class="card-text">
+                  Jenis kanker kulit yang paling ganas dan biasanya berkembang
+                  dari tahi lalat atau bintik-bintik pigmen. Melanoma sering
+                  kali memiliki ciri-ciri yang tidak teratur dan berwarna gelap.
+                </p>
+                <a
+                  href="https://www.alodokter.com/kanker-kulit-melanoma"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/akiec.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="AKIEC"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Actinic Keratosis (AKIEC)</h5>
+                <p class="card-text">
+                  Lesi kulit yang muncul akibat paparan sinar matahari yang
+                  berlebihan. AKIEC bisa menjadi pra-kanker yang perlu diawasi
+                  dengan cermat.
+                </p>
+                <a
+                  href="https://www.klikdokter.com/penyakit/masalah-kulit/aktinik-keratosis"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row text-center g-4 my-4">
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/df.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="DF"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Dermatofibroma (DF)</h5>
+                <p class="card-text">
+                  Tumor yang tumbuh dalam lapisan kulit dan sering kali muncul
+                  sebagai tonjolan yang keras pada kulit.
+                </p>
+                <a
+                  href="https://www.honestdocs.id/dermatofibroma"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/bcc.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="BCC"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Basal Cell Carcinoma (BCC)</h5>
+                <p class="card-text">
+                  Jenis kanker kulit yang umum dan sering kali tidak ganas. BCC
+                  sering kali muncul sebagai benjolan yang bersisik atau keruh
+                  pada kulit.
+                </p>
+                <a
+                  href="https://www.alodokter.com/karsinoma-sel-basal"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/nv.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="NV"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Nevus (NV)</h5>
+                <p class="card-text">
+                  Jenis kanker yang merujuk pada tahi lalat atau bintik-bintik
+                  pigmen pada kulit. Nevus biasanya tidak berbahaya dan dapat
+                  muncul pada semua orang.
+                </p>
+                <a
+                  href="https://www.klikdokter.com/penyakit/masalah-kulit/nevus"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="row text-center g-4 my-4">
+          <div class="col-md-6 offset-md-3">
+            <div
+              class="card h-100 bg-light text-dark border d-flex flex-column"
+            >
+              <div class="d-flex justify-content-center">
+                <img
+                  src="/static/images/vasc.jpg"
+                  class="p-2 card-img-top img-fluid"
+                  alt="VASC"
+                  style="max-height: 200px; object-fit: contain"
+                />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Vascular Lesions (VASC)</h5>
+                <p class="card-text">
+                  Ini mencakup lesi kulit yang berkaitan dengan pembuluh darah,
+                  seperti hemangioma atau angioma.
+                </p>
+                <a
+                  href="https://www.alodokter.com/kanker-kulit"
+                  class="btn btn-primary mt-auto"
+                  >Cek Selengkapnya</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- promo -->
+    <section class="bg-primary text-alight p-5" id="promo">
+      <div class="container">
+        <div class="d-md-flex justify-content-between align-items-center">
+          <h3>Dapatkan Promo Menarik</h3>
+
+          <div class="input-group">
+            <input
+              type="text "
+              class="form-control"
+              placeholder="Masukan email anda"
+            />
+            <button class="btn btn-dark btn-lg" type="button">Submit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Contact -->
+    <section class="p-5" id="contact">
+      <div class="container">
+        <div class="row g-4 align-items-center">
+          <div class="col-md">
+            <h2 class="text-center mb-4">Contact Us</h2>
+            <ul class="list-group list-group-flush lead">
+              <li class="list-group-item">
+                <i class="bi bi-geo-alt"></i>
+                <span class="fw-bold">Location:</span> <br />Jalan keselamatan,
+                11
+              </li>
+
+              <li class="list-group-item">
+                <i class="bi bi-telephone"></i>
+                <span class="fw-bold">Mobil Phone</span> <br />
+                (+62) 8382094862
+              </li>
+
+              <li class="list-group-item">
+                <i class="bi bi-envelope"></i>
+                <span class="fw-bold">Email</span> <br />
+                SkinGuard@gmail.com
+              </li>
+
+              <li class="list-group-item">
+                <i class="bi bi-instagram"></i>
+                <span class="fw-bold">Instagram</span> <br />
+                @_
+              </li>
+            </ul>
+          </div>
+          <div class="col-md">
+            <img
+              class="img-fluid d-none d-lg-block"
+              src="/static/images/contact1.svg"
+              alt="contact"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="p-5 bg-dark text-white text-center position-relative">
+      <div class="container">
+        <p class="lead">Copyright &copy; SkinGuard.com</p>
+        <a href="#" class="position-absolute bottom-0 end-0 p-5">
+          <i class="bi bi-arrow-up-circle h1"></i>
+        </a>
+      </div>
+    </footer>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
